@@ -12,7 +12,7 @@ async def ping(interaction: Interaction):
 
 
 
-@client.slash_command(name='Kick',description='Kick a member',guild_ids=[test_id])
+@client.slash_command(name='Kick',description='Kick a member')
 @has_permissions(kick_members=True)
 async def kick(ctx,member:nextcord.Member,*,reason = None):
     await member.kick(reason=reason)
