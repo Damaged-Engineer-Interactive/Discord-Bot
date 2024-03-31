@@ -3,9 +3,6 @@ from nextcord.ext import commands
 from nextcord.ext.commands import has_permissions,MissingPermissions
 import nextcord
 
-TESTING_GUILD_ID = 1224008327621513316  # Replace with your testing guild id
-
-
 intents = nextcord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix="!",intents=intents)
@@ -18,7 +15,7 @@ async def ping(interaction: Interaction):
 
 
 
-@bot.slash_command(description='Kick a member')
+@bot.slash_command(description='Kick a member',guild_ids= [1224008327621513316] )
 @has_permissions(kick_members=True)
 async def kick(ctx,member:nextcord.Member,*,reason = None):
     await member.kick(reason=reason)
