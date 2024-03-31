@@ -10,13 +10,12 @@ async def ping(interaction: Interaction):
     await interaction.response.send_message("Pong!")
 
 
-
-
-@client.slash_command(name='Kick',description='Kick a member')
+@bot.slash_command(name='Kick',description='Kick a member')
 @has_permissions(kick_members=True)
 async def kick(ctx,member:nextcord.Member,*,reason = None):
     await member.kick(reason=reason)
     await ctx.send(f"user {member} has been kicked")
+
 
 @kick.error
 async def kick_error(ctx,error):
