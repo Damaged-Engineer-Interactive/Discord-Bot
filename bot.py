@@ -29,4 +29,14 @@ async def kick_error(ctx,error):
     if isinstance(error,commands.MissingPermissions):
         await ctx.send("you dont have permission to kick")
 
+@bot.slash_command(description='ban a member',guild_ids= [1224008327621513316] )
+@has_permissions(ban_members=True)
+async def ban(ctx,member:nextcord.Member,*,reason = None):
+    await member.ban(reason=reason)
+    await ctx.send(f"user {member} has been banned")
+
+@ban.error
+async def ban_error(ctx,error):
+    if isinstance(error,commands.MissingPermissions):
+        await ctx.send("you dont have permission to ban")
 bot.run("MTIyNDAwMzU2NDUzNjMzNjQ0Ng.GByzHO.cPPb2hKY8g3F0MXFJ-8M8mUrno-phUrJRKsOC4")
