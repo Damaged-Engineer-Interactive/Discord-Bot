@@ -29,9 +29,4 @@ async def kick_error(ctx,error):
     if isinstance(error,commands.MissingPermissions):
         await ctx.send("you dont have permission to kick")
 
-
-
-bot.run("MTIyNDAwMzU2NDUzNjMzNjQ0Ng.GByzHO.cPPb2hKY8g3F0MXFJ-8M8mUrno-phUrJRKsOC4")
-
-
 bot.run("MTIyNDAwMzU2NDUzNjMzNjQ0Ng.GByzHO.cPPb2hKY8g3F0MXFJ-8M8mUrno-phUrJRKsOC4")
