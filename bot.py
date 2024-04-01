@@ -111,4 +111,4 @@ async def removetimeout(ctx,member:nextcord.Member,*,reason=None):
         await ctx.send('you dont have permission to remove timeout from members')
 
 
-bot.run("MTIyNDAwMzU2NDUzNjMzNjQ0Ng.GByzHO.cPPb2hKY8g3F0MXFJ-8M8mUrno-phUrJRKsOC4")
+bot.run("MTIyNDAwMzU2NDUzNjMzNjQ0Ng.Gek1Bp.fgRcYwYI5WPh7vPAMiDPcZKPSOgDSLVMi6R5I0")
