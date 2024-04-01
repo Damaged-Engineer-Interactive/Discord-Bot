@@ -5,8 +5,9 @@ import nextcord
 import datetime
 
 
-TESTING_GUILD_IDS = [1224008327621513316]  # Replace with your testing guild id
+ # Replace with your testing guild id
 
+guild_ids = [1224008327621513316]
 
 intents = nextcord.Intents.default()
 intents.message_content = True
@@ -19,12 +20,12 @@ async def on_ready():
 
 
 # command will be global if guild_ids is not specified
-@bot.slash_command(description="Ping command",guild_ids=TESTING_GUILD_IDS)
+@bot.slash_command(description="Ping command",guild_ids=guild_ids)
 async def ping(interaction: Interaction):
     await interaction.response.send_message("Pong!")
 
 
-@bot.slash_command(description='Kick a member',guild_ids=TESTING_GUILD_IDS)
+@bot.slash_command(description='Kick a member',guild_ids=guild_ids)
 @has_permissions(kick_members=True)
 async def kick(ctx,member:nextcord.Member,*,reason = None):
     await member.kick(reason=reason)
@@ -35,7 +36,7 @@ async def kick_error(ctx,error):
     if isinstance(error,commands.MissingPermissions):
         await ctx.send("you dont have permission to kick")
 
-@bot.slash_command(description='ban a member',guild_ids= [1224008327621513316] )
+@bot.slash_command(description='ban a member',guild_ids= guild_ids )
 @has_permissions(ban_members=True)
 async def ban(ctx,member:nextcord.Member,*,reason = None):
     await member.ban(reason=reason)
@@ -46,12 +47,42 @@ async def ban_error(ctx,error):
     if isinstance(error,commands.MissingPermissions):
         await ctx.send("you dont have permission to ban")
 
-@bot.slash_command(description='unban a member',guild_ids= [1224008327621513316] )
+@bot.slash_command(description='unban a member',guild_ids= guild_ids )
 @has_permissions(ban_members=True)
 async def unban(ctx,member:nextcord.User,*,reason = None):
     guild = ctx.guild
     await guild.unban(user = member)
     await ctx.send(f"user {member} has been unbanned")
+
+@bot.slash_command(description='mute a member',guild_ids= guild_ids )
+@has_permissions(mute_members=True)
+async def mute(ctx,member:nextcord.Member,*,reason=None):
+    await member.edit(mute=True,reason=reason)
+    await ctx.send(f"{member} muted")
+
+@bot.slash_command(description='unmute a member',guild_ids= guild_ids )
+@has_permissions(mute_members=True)
+async def unmute(ctx,member:nextcord.Member,*,reason=None):
+    await member.edit(mute=False,reason=reason)
+    await ctx.send(f"{member} unmuted")
+
+@bot.slash_command(description='deafen a member',guild_ids= guild_ids )
+@has_permissions(deafen_members=True)
+async def deafen(ctx,member:nextcord.Member,*,reason=None):
+    await member.edit(deafen=True,reason=reason)
+    await ctx.send(f"{member} deafened")
+
+@bot.slash_command(description='undeafen a member',guild_ids= guild_ids )
+@has_permissions(deafen_members=True)
+async def undeafen(ctx,member:nextcord.Member,*,reason=None):
+    await member.edit(deafen=False,reason=reason)
+    await ctx.send(f"{member} undeafened")
+
+@bot.slash_command(description='enable slowmode',guild_ids= guild_ids )
+@has_permissions(manage_channels=True)
+async def slowmode(ctx,time,*,reason=None):
+    await ctx.channel.edit(slowmode_delay=time,reason=reason)
+    await ctx.send(f"slowmode enabled for {time} seconds")
 
 @unban.error
 async def unban_error(ctx,error):
@@ -59,7 +90,7 @@ async def unban_error(ctx,error):
         await ctx.send("you dont have permission to unban")
 
 
-@bot.slash_command(description='timeout a member',guild_ids= [1224008327621513316])
+@bot.slash_command(description='timeout a member',guild_ids= guild_ids)
 @has_permissions(moderate_members=True)
 async def timeout(ctx,member:nextcord.Member,time,*,reason=None):
     try:
@@ -70,7 +101,7 @@ async def timeout(ctx,member:nextcord.Member,time,*,reason=None):
         await ctx.send('you dont have permission to timeout members')
 
 
-@bot.slash_command(description='removes timeout from a member',guild_ids= [1224008327621513316])
+@bot.slash_command(description='removes timeout from a member',guild_ids= guild_ids)
 @has_permissions(moderate_members=True)
 async def removetimeout(ctx,member:nextcord.Member,*,reason=None):
     try:
