@@ -11,7 +11,7 @@ guild_ids = [1224008327621513316]
 
 intents = nextcord.Intents.default()
 intents.message_content = True
-bot = commands.Bot(command_prefix="!",intents=intents)
+bot = commands.Bot(intents=intents)
 
 
 @bot.event
@@ -27,88 +27,88 @@ async def ping(interaction: Interaction):
 
 @bot.slash_command(description='Kick a member',guild_ids=guild_ids)
 @has_permissions(kick_members=True)
-async def kick(ctx,member:nextcord.Member,*,reason = None):
+async def kick(interaction: Interaction,member:nextcord.Member,*,reason = None):
     await member.kick(reason=reason)
-    await ctx.send(f"user {member} has been kicked")
+    await interaction.send(f"user {member} has been kicked")
 
 @kick.error
-async def kick_error(ctx,error):
+async def kick_error(interaction: Interaction,error):
     if isinstance(error,commands.MissingPermissions):
-        await ctx.send("you dont have permission to kick")
+        await interaction.send("you dont have permission to kick")
 
 @bot.slash_command(description='ban a member',guild_ids= guild_ids )
 @has_permissions(ban_members=True)
-async def ban(ctx,member:nextcord.Member,*,reason = None):
+async def ban(interaction: Interaction,member:nextcord.Member,*,reason = None):
     await member.ban(reason=reason)
-    await ctx.send(f"user {member} has been banned")
+    await interaction.send(f"user {member} has been banned")
 
 @ban.error
-async def ban_error(ctx,error):
+async def ban_error(interaction: Interaction,error):
     if isinstance(error,commands.MissingPermissions):
-        await ctx.send("you dont have permission to ban")
+        await interaction.send("you dont have permission to ban")
 
 @bot.slash_command(description='unban a member',guild_ids= guild_ids )
 @has_permissions(ban_members=True)
-async def unban(ctx,member:nextcord.User,*,reason = None):
-    guild = ctx.guild
+async def unban(interaction: Interaction,member:nextcord.User,*,reason = None):
+    guild = interaction.guild
     await guild.unban(user = member)
-    await ctx.send(f"user {member} has been unbanned")
+    await interaction.send(f"user {member} has been unbanned")
 
 @bot.slash_command(description='mute a member',guild_ids= guild_ids )
 @has_permissions(mute_members=True)
-async def mute(ctx,member:nextcord.Member,*,reason=None):
+async def mute(interaction: Interaction,member:nextcord.Member,*,reason=None):
     await member.edit(mute=True,reason=reason)
-    await ctx.send(f"{member} muted")
+    await interaction.send(f"{member} muted")
 
 @bot.slash_command(description='unmute a member',guild_ids= guild_ids )
 @has_permissions(mute_members=True)
-async def unmute(ctx,member:nextcord.Member,*,reason=None):
+async def unmute(interaction: Interaction,member:nextcord.Member,*,reason=None):
     await member.edit(mute=False,reason=reason)
-    await ctx.send(f"{member} unmuted")
+    await interaction.send(f"{member} unmuted")
 
 @bot.slash_command(description='deafen a member',guild_ids= guild_ids )
 @has_permissions(deafen_members=True)
-async def deafen(ctx,member:nextcord.Member,*,reason=None):
+async def deafen(interaction: Interaction,member:nextcord.Member,*,reason=None):
     await member.edit(deafen=True,reason=reason)
-    await ctx.send(f"{member} deafened")
+    await interaction.send(f"{member} deafened")
 
 @bot.slash_command(description='undeafen a member',guild_ids= guild_ids )
 @has_permissions(deafen_members=True)
-async def undeafen(ctx,member:nextcord.Member,*,reason=None):
+async def undeafen(interaction: Interaction,member:nextcord.Member,*,reason=None):
     await member.edit(deafen=False,reason=reason)
-    await ctx.send(f"{member} undeafened")
+    await interaction.send(f"{member} undeafened")
 
 @bot.slash_command(description='enable slowmode',guild_ids= guild_ids )
 @has_permissions(manage_channels=True)
-async def slowmode(ctx,time,*,reason=None):
-    await ctx.channel.edit(slowmode_delay=time,reason=reason)
-    await ctx.send(f"slowmode enabled for {time} seconds")
+async def slowmode(interaction: Interaction,time,*,reason=None):
+    await interaction.channel.edit(slowmode_delay=time,reason=reason)
+    await interaction.send(f"slowmode enabled for {time} seconds")
 
 @unban.error
-async def unban_error(ctx,error):
+async def unban_error(interaction: Interaction,error):
     if isinstance(error,commands.MissingPermissions):
-        await ctx.send("you dont have permission to unban")
+        await interaction.send("you dont have permission to unban")
 
 
 @bot.slash_command(description='timeout a member',guild_ids= guild_ids)
 @has_permissions(moderate_members=True)
-async def timeout(ctx,member:nextcord.Member,time,*,reason=None):
+async def timeout(interaction: Interaction,member:nextcord.Member,time,*,reason=None):
     try:
         resume = datetime.timedelta(minutes=int(time))
         await member.edit(timeout=nextcord.utils.utcnow() + resume,reason=reason)
-        await ctx.send(f"{member} timed out for {time} minutes")
+        await interaction.send(f"{member} timed out for {time} minutes")
     except nextcord.Forbidden:
-        await ctx.send('you dont have permission to timeout members')
+        await interaction.send('you dont have permission to timeout members')
 
 
 @bot.slash_command(description='removes timeout from a member',guild_ids= guild_ids)
 @has_permissions(moderate_members=True)
-async def removetimeout(ctx,member:nextcord.Member,*,reason=None):
+async def removetimeout(interaction: Interaction,member:nextcord.Member,*,reason=None):
     try:
         await member.edit(timeout=nextcord.utils.utcnow(),reason=reason)
-        await ctx.send(f"removed {member} from timeout")
+        await interaction.send(f"removed {member} from timeout")
     except nextcord.Forbidden:
-        await ctx.send('you dont have permission to remove timeout from members')
+        await interaction.send('you dont have permission to remove timeout from members')
 
 
 bot.run("MTIyNDAwMzU2NDUzNjMzNjQ0Ng.Gek1Bp.fgRcYwYI5WPh7vPAMiDPcZKPSOgDSLVMi6R5I0")
