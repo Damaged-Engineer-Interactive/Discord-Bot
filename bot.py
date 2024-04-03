@@ -136,5 +136,10 @@ async def joke(interaction:Interaction):
     tt = json.loads(data.text)
     await interaction.send(f"{tt['setup']}\n{tt['punchline']}")
 
+@bot.slash_command(description="tell a chuck norris joke",guild_ids=guild_ids)
+async def chuck_norris(interaction:Interaction):
+    data = requests.get(r"https://api.chucknorris.io/jokes/random")
+    tt = json.loads(data.text)
+    await interaction.send(f"{tt['value']}")
 
 bot.run("MTIyNDAwMzU2NDUzNjMzNjQ0Ng.Gek1Bp.fgRcYwYI5WPh7vPAMiDPcZKPSOgDSLVMi6R5I0")
