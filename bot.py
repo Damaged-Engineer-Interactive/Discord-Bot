@@ -1,8 +1,10 @@
-from nextcord import Interaction, SlashOption, Member
+from nextcord import Interaction
 from nextcord.ext import commands
 from nextcord.ext.commands import has_permissions,MissingPermissions
 import nextcord
 import datetime
+import json
+import requests
 
 
  # Replace with your testing guild id
@@ -127,5 +129,12 @@ async def unmute_text(interaction:Interaction,member:nextcord.Member,*,reason=No
     role = nextcord.utils.get(interaction.guild.roles,name="Muted")
     await member.remove_roles(role,reason=reason)
     await interaction.send(f'{member} was unmuted from text channels')
+
+@bot.slash_command(description="tell a joke",guild_ids=guild_ids)
+async def joke(interaction:Interaction):
+    data = requests.get(r"https://official-joke-api.appspot.com/random_joke")
+    tt = json.loads(data.text)
+    await interaction.send(f"{tt['setup']}\n{tt['punchline']}")
+
 
 bot.run("MTIyNDAwMzU2NDUzNjMzNjQ0Ng.Gek1Bp.fgRcYwYI5WPh7vPAMiDPcZKPSOgDSLVMi6R5I0")
