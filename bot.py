@@ -54,17 +54,17 @@ async def unban(interaction: Interaction,member:nextcord.User,*,reason = None):
     await guild.unban(user = member)
     await interaction.send(f"user {member} has been unbanned")
 
-@bot.slash_command(description='mute a member',guild_ids= guild_ids )
+@bot.slash_command(description='mute a member from voice channels',guild_ids= guild_ids )
 @has_permissions(mute_members=True)
-async def mute(interaction: Interaction,member:nextcord.Member,*,reason=None):
+async def mute_voice(interaction: Interaction,member:nextcord.Member,*,reason=None):
     await member.edit(mute=True,reason=reason)
-    await interaction.send(f"{member} muted")
+    await interaction.send(f"{member} voice muted")
 
-@bot.slash_command(description='unmute a member',guild_ids= guild_ids )
+@bot.slash_command(description='unmute a member from voice channels',guild_ids= guild_ids )
 @has_permissions(mute_members=True)
-async def unmute(interaction: Interaction,member:nextcord.Member,*,reason=None):
+async def unmute_voice(interaction: Interaction,member:nextcord.Member,*,reason=None):
     await member.edit(mute=False,reason=reason)
-    await interaction.send(f"{member} unmuted")
+    await interaction.send(f"{member} voice unmuted")
 
 @bot.slash_command(description='deafen a member',guild_ids= guild_ids )
 @has_permissions(deafen_members=True)
@@ -110,5 +110,22 @@ async def removetimeout(interaction: Interaction,member:nextcord.Member,*,reason
     except nextcord.Forbidden:
         await interaction.send('you dont have permission to remove timeout from members')
 
+@bot.slash_command(description="mutes a member from texting",guild_ids=guild_ids)
+@has_permissions(mute_members=True)
+async def mute_text(interaction:Interaction,member:nextcord.Member,*,reason=None):
+    role = nextcord.utils.get(interaction.guild.roles,name="Muted")
+    guild = interaction.guild
+    if role not in guild.roles:
+        perm = nextcord.Permissions(send_messages=False)
+        guild.create_role(name="Muted",permissions=perm)
+    await member.add_roles(role,reason=reason)
+    await interaction.send(f'{member} was muted from text channels')
+
+@bot.slash_command(description="unmutes a member from texting",guild_ids=guild_ids)
+@has_permissions(mute_members=True)
+async def unmute_text(interaction:Interaction,member:nextcord.Member,*,reason=None):
+    role = nextcord.utils.get(interaction.guild.roles,name="Muted")
+    await member.remove_roles(role,reason=reason)
+    await interaction.send(f'{member} was unmuted from text channels')
 
 bot.run("MTIyNDAwMzU2NDUzNjMzNjQ0Ng.Gek1Bp.fgRcYwYI5WPh7vPAMiDPcZKPSOgDSLVMi6R5I0")
