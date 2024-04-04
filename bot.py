@@ -1,5 +1,5 @@
 from discord.ext import commands
-from discord.ext.commands import has_permissions,MissingPermissions
+from discord.ext.commands import MissingPermissions
 import discord
 import datetime
 import json
@@ -14,7 +14,7 @@ def hex_to_rgb(value):
     lv = len(value)
     return tuple(int(value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3))
 
-guild_ids = [1224008327621513316]
+guild_ids = [1224008327621513316,1223917167741894667]
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -37,7 +37,7 @@ async def ping(interaction: commands.Context):
 
 
 @bot.hybrid_command(description='Kick a member',guild_ids=guild_ids)
-@has_permissions(kick_members=True)
+@commands.has_permissions(kick_members=True)
 async def kick(interaction: commands.Context,member:discord.Member,*,reason = None):
     reason = "N/A" if reason == None else reason
     await member.kick(reason=reason)
@@ -47,13 +47,13 @@ async def kick(interaction: commands.Context,member:discord.Member,*,reason = No
 @kick.error
 async def kick_error(interaction: commands.Context,error):
     if isinstance(error,commands.MissingPermissions):
-        await interaction.response.send_message("you dont have permission to kick")
+        await interaction.send("you dont have permission to kick")
     else:
-        await interaction.response.send_message(f"An unknown error has occured.\nDebug : {error}")
+        await interaction.send(f"An unknown error has occured.\nDebug : {error}")
     await bot.tree.sync()
 
 @bot.hybrid_command(description='ban a member',guild_ids= guild_ids )
-@has_permissions(ban_members=True)
+@commands.has_permissions(ban_members=True)
 async def ban(interaction: commands.Context,member:discord.Member,*,reason = None):
     await member.ban(reason=reason)
     await interaction.send(f"user {member} has been banned")
@@ -66,7 +66,7 @@ async def ban_error(interaction: commands.Context,error):
         await bot.tree.sync()
 
 @bot.hybrid_command(description='unban a member',guild_ids= guild_ids )
-@has_permissions(ban_members=True)
+@commands.has_permissions(ban_members=True)
 async def unban(interaction: commands.Context,member:discord.User,*,reason = None):
     guild = interaction.guild
     await guild.unban(user = member)
@@ -74,35 +74,35 @@ async def unban(interaction: commands.Context,member:discord.User,*,reason = Non
     await bot.tree.sync()
 
 @bot.hybrid_command(description='mute a member from voice channels',guild_ids= guild_ids )
-@has_permissions(mute_members=True)
+@commands.has_permissions(mute_members=True)
 async def mute_voice(interaction: commands.Context,member:discord.Member,*,reason=None):
     await member.edit(mute=True,reason=reason)
     await interaction.send(f"{member} voice muted")
     await bot.tree.sync()
 
 @bot.hybrid_command(description='unmute a member from voice channels',guild_ids= guild_ids )
-@has_permissions(mute_members=True)
+@commands.has_permissions(mute_members=True)
 async def unmute_voice(interaction: commands.Context,member:discord.Member,*,reason=None):
     await member.edit(mute=False,reason=reason)
     await interaction.send(f"{member} voice unmuted")
     await bot.tree.sync()
 
 @bot.hybrid_command(description='deafen a member',guild_ids= guild_ids )
-@has_permissions(deafen_members=True)
+@commands.has_permissions(deafen_members=True)
 async def deafen(interaction: commands.Context,member:discord.Member,*,reason=None):
     await member.edit(deafen=True,reason=reason)
     await interaction.send(f"{member} deafened")
     await bot.tree.sync()
 
 @bot.hybrid_command(description='undeafen a member',guild_ids= guild_ids )
-@has_permissions(deafen_members=True)
+@commands.has_permissions(deafen_members=True)
 async def undeafen(interaction: commands.Context,member:discord.Member,*,reason=None):
     await member.edit(deafen=False,reason=reason)
     await interaction.send(f"{member} undeafened")
     await bot.tree.sync()
 
 @bot.hybrid_command(description='enable slowmode',guild_ids= guild_ids )
-@has_permissions(manage_channels=True)
+@commands.has_permissions(manage_channels=True)
 async def slowmode(interaction: commands.Context,time,*,reason=None):
     await interaction.channel.edit(slowmode_delay=time,reason=reason)
     await interaction.send(f"slowmode enabled for {time} seconds")
@@ -116,7 +116,7 @@ async def unban_error(interaction: commands.Context,error):
 
 
 @bot.hybrid_command(description='timeout a member',guild_ids= guild_ids)
-@has_permissions(moderate_members=True)
+@commands.has_permissions(moderate_members=True)
 async def timeout(interaction: commands.Context,member:discord.Member,time,*,reason=None):
     try:
         resume = datetime.timedelta(minutes=int(time))
@@ -129,7 +129,7 @@ async def timeout(interaction: commands.Context,member:discord.Member,time,*,rea
 
 
 @bot.hybrid_command(description='removes timeout from a member',guild_ids= guild_ids)
-@has_permissions(moderate_members=True)
+@commands.has_permissions(moderate_members=True)
 async def removetimeout(interaction: commands.Context,member:discord.Member,*,reason=None):
     try:
         await member.edit(timed_out_until=discord.utils.utcnow(),reason=reason)
@@ -140,7 +140,7 @@ async def removetimeout(interaction: commands.Context,member:discord.Member,*,re
         await bot.tree.sync()
 
 @bot.hybrid_command(description="mutes a member from texting",guild_ids=guild_ids)
-@has_permissions(mute_members=True)
+@commands.has_permissions(mute_members=True)
 async def mute_text(interaction:commands.Context,member:discord.Member,*,reason=None):
     role = discord.utils.get(interaction.guild.roles,name="Muted")
     guild = interaction.guild
@@ -152,7 +152,7 @@ async def mute_text(interaction:commands.Context,member:discord.Member,*,reason=
     await bot.tree.sync()
 
 @bot.hybrid_command(description="unmutes a member from texting",guild_ids=guild_ids)
-@has_permissions(mute_members=True)
+@commands.has_permissions(mute_members=True)
 async def unmute_text(interaction:commands.Context,member:discord.Member,*,reason=None):
     role = discord.utils.get(interaction.guild.roles,name="Muted")
     await member.remove_roles(role,reason=reason)
