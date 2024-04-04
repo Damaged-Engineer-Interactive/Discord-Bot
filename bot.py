@@ -23,7 +23,10 @@ bot = commands.Bot(command_prefix="!",intents=intents)
 
 @bot.event
 async def on_ready():
-    await bot.change_presence(status=discord.Status.idle,activity=discord.Game("hard to get"))
+    await bot.change_presence(status=discord.Status.online,activity=discord.Activity(name="you",type=discord.ActivityType.watching))
+    print(f"Logged in as {bot.user} | Owner : {bot.owner_id}")
+    print(f"Commands : {bot.commands}")
+    print(f"Help Command : {bot.help_command}")
 
 
 # command will be global if guild_ids is not specified
@@ -36,6 +39,7 @@ async def ping(interaction: commands.Context):
 @bot.hybrid_command(description='Kick a member',guild_ids=guild_ids)
 @has_permissions(kick_members=True)
 async def kick(interaction: commands.Context,member:discord.Member,*,reason = None):
+    reason = "N/A" if reason == None else reason
     await member.kick(reason=reason)
     await interaction.send(f"user {member} has been kicked")
     await bot.tree.sync()
@@ -43,8 +47,10 @@ async def kick(interaction: commands.Context,member:discord.Member,*,reason = No
 @kick.error
 async def kick_error(interaction: commands.Context,error):
     if isinstance(error,commands.MissingPermissions):
-        await interaction.send("you dont have permission to kick")
-        await bot.tree.sync()
+        await interaction.response.send_message("you dont have permission to kick")
+    else:
+        await interaction.response.send_message(f"An unknown error has occured.\nDebug : {error}")
+    await bot.tree.sync()
 
 @bot.hybrid_command(description='ban a member',guild_ids= guild_ids )
 @has_permissions(ban_members=True)
