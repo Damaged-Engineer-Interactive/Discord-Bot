@@ -1,145 +1,177 @@
-from nextcord import Interaction
-from nextcord.ext import commands
-from nextcord.ext.commands import has_permissions,MissingPermissions
-import nextcord
+from discord.ext import commands
+from discord.ext.commands import has_permissions,MissingPermissions
+import discord
 import datetime
 import json
 import requests
+from dispie import EmbedCreator
 
 
  # Replace with your testing guild id
 
+def hex_to_rgb(value):
+    value = value.lstrip('#')
+    lv = len(value)
+    return tuple(int(value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3))
+
 guild_ids = [1224008327621513316]
 
-intents = nextcord.Intents.default()
+intents = discord.Intents.default()
 intents.message_content = True
-bot = commands.Bot(intents=intents)
+bot = commands.Bot(command_prefix="!",intents=intents)
 
 
 @bot.event
 async def on_ready():
-    await bot.change_presence(status=nextcord.Status.idle,activity=nextcord.Game("hard to get"))
+    await bot.change_presence(status=discord.Status.idle,activity=discord.Game("hard to get"))
 
 
 # command will be global if guild_ids is not specified
-@bot.slash_command(description="Ping command",guild_ids=guild_ids)
-async def ping(interaction: Interaction):
-    await interaction.response.send_message("Pong!")
+@bot.hybrid_command(description="Ping command",guild_ids=guild_ids)
+async def ping(interaction: commands.Context):
+    await interaction.send("Pong!")
+    await bot.tree.sync()
 
 
-@bot.slash_command(description='Kick a member',guild_ids=guild_ids)
+@bot.hybrid_command(description='Kick a member',guild_ids=guild_ids)
 @has_permissions(kick_members=True)
-async def kick(interaction: Interaction,member:nextcord.Member,*,reason = None):
+async def kick(interaction: commands.Context,member:discord.Member,*,reason = None):
     await member.kick(reason=reason)
     await interaction.send(f"user {member} has been kicked")
+    await bot.tree.sync()
 
 @kick.error
-async def kick_error(interaction: Interaction,error):
+async def kick_error(interaction: commands.Context,error):
     if isinstance(error,commands.MissingPermissions):
         await interaction.send("you dont have permission to kick")
+        await bot.tree.sync()
 
-@bot.slash_command(description='ban a member',guild_ids= guild_ids )
+@bot.hybrid_command(description='ban a member',guild_ids= guild_ids )
 @has_permissions(ban_members=True)
-async def ban(interaction: Interaction,member:nextcord.Member,*,reason = None):
+async def ban(interaction: commands.Context,member:discord.Member,*,reason = None):
     await member.ban(reason=reason)
     await interaction.send(f"user {member} has been banned")
+    await bot.tree.sync()
 
 @ban.error
-async def ban_error(interaction: Interaction,error):
+async def ban_error(interaction: commands.Context,error):
     if isinstance(error,commands.MissingPermissions):
         await interaction.send("you dont have permission to ban")
+        await bot.tree.sync()
 
-@bot.slash_command(description='unban a member',guild_ids= guild_ids )
+@bot.hybrid_command(description='unban a member',guild_ids= guild_ids )
 @has_permissions(ban_members=True)
-async def unban(interaction: Interaction,member:nextcord.User,*,reason = None):
+async def unban(interaction: commands.Context,member:discord.User,*,reason = None):
     guild = interaction.guild
     await guild.unban(user = member)
     await interaction.send(f"user {member} has been unbanned")
+    await bot.tree.sync()
 
-@bot.slash_command(description='mute a member from voice channels',guild_ids= guild_ids )
+@bot.hybrid_command(description='mute a member from voice channels',guild_ids= guild_ids )
 @has_permissions(mute_members=True)
-async def mute_voice(interaction: Interaction,member:nextcord.Member,*,reason=None):
+async def mute_voice(interaction: commands.Context,member:discord.Member,*,reason=None):
     await member.edit(mute=True,reason=reason)
     await interaction.send(f"{member} voice muted")
+    await bot.tree.sync()
 
-@bot.slash_command(description='unmute a member from voice channels',guild_ids= guild_ids )
+@bot.hybrid_command(description='unmute a member from voice channels',guild_ids= guild_ids )
 @has_permissions(mute_members=True)
-async def unmute_voice(interaction: Interaction,member:nextcord.Member,*,reason=None):
+async def unmute_voice(interaction: commands.Context,member:discord.Member,*,reason=None):
     await member.edit(mute=False,reason=reason)
     await interaction.send(f"{member} voice unmuted")
+    await bot.tree.sync()
 
-@bot.slash_command(description='deafen a member',guild_ids= guild_ids )
+@bot.hybrid_command(description='deafen a member',guild_ids= guild_ids )
 @has_permissions(deafen_members=True)
-async def deafen(interaction: Interaction,member:nextcord.Member,*,reason=None):
+async def deafen(interaction: commands.Context,member:discord.Member,*,reason=None):
     await member.edit(deafen=True,reason=reason)
     await interaction.send(f"{member} deafened")
+    await bot.tree.sync()
 
-@bot.slash_command(description='undeafen a member',guild_ids= guild_ids )
+@bot.hybrid_command(description='undeafen a member',guild_ids= guild_ids )
 @has_permissions(deafen_members=True)
-async def undeafen(interaction: Interaction,member:nextcord.Member,*,reason=None):
+async def undeafen(interaction: commands.Context,member:discord.Member,*,reason=None):
     await member.edit(deafen=False,reason=reason)
     await interaction.send(f"{member} undeafened")
+    await bot.tree.sync()
 
-@bot.slash_command(description='enable slowmode',guild_ids= guild_ids )
+@bot.hybrid_command(description='enable slowmode',guild_ids= guild_ids )
 @has_permissions(manage_channels=True)
-async def slowmode(interaction: Interaction,time,*,reason=None):
+async def slowmode(interaction: commands.Context,time,*,reason=None):
     await interaction.channel.edit(slowmode_delay=time,reason=reason)
     await interaction.send(f"slowmode enabled for {time} seconds")
+    await bot.tree.sync()
 
 @unban.error
-async def unban_error(interaction: Interaction,error):
+async def unban_error(interaction: commands.Context,error):
     if isinstance(error,commands.MissingPermissions):
         await interaction.send("you dont have permission to unban")
+        await bot.tree.sync()
 
 
-@bot.slash_command(description='timeout a member',guild_ids= guild_ids)
+@bot.hybrid_command(description='timeout a member',guild_ids= guild_ids)
 @has_permissions(moderate_members=True)
-async def timeout(interaction: Interaction,member:nextcord.Member,time,*,reason=None):
+async def timeout(interaction: commands.Context,member:discord.Member,time,*,reason=None):
     try:
         resume = datetime.timedelta(minutes=int(time))
-        await member.edit(timeout=nextcord.utils.utcnow() + resume,reason=reason)
+        await member.edit(timeout=discord.utils.utcnow() + resume,reason=reason)
         await interaction.send(f"{member} timed out for {time} minutes")
-    except nextcord.Forbidden:
+        await bot.tree.sync()
+    except discord.Forbidden:
         await interaction.send('you dont have permission to timeout members')
+        await bot.tree.sync()
 
 
-@bot.slash_command(description='removes timeout from a member',guild_ids= guild_ids)
+@bot.hybrid_command(description='removes timeout from a member',guild_ids= guild_ids)
 @has_permissions(moderate_members=True)
-async def removetimeout(interaction: Interaction,member:nextcord.Member,*,reason=None):
+async def removetimeout(interaction: commands.Context,member:discord.Member,*,reason=None):
     try:
-        await member.edit(timeout=nextcord.utils.utcnow(),reason=reason)
+        await member.edit(timeout=discord.utils.utcnow(),reason=reason)
         await interaction.send(f"removed {member} from timeout")
-    except nextcord.Forbidden:
+    except discord.Forbidden:
         await interaction.send('you dont have permission to remove timeout from members')
+    finally:
+        await bot.tree.sync()
 
-@bot.slash_command(description="mutes a member from texting",guild_ids=guild_ids)
+@bot.hybrid_command(description="mutes a member from texting",guild_ids=guild_ids)
 @has_permissions(mute_members=True)
-async def mute_text(interaction:Interaction,member:nextcord.Member,*,reason=None):
-    role = nextcord.utils.get(interaction.guild.roles,name="Muted")
+async def mute_text(interaction:commands.Context,member:discord.Member,*,reason=None):
+    role = discord.utils.get(interaction.guild.roles,name="Muted")
     guild = interaction.guild
     if role not in guild.roles:
-        perm = nextcord.Permissions(send_messages=False)
+        perm = discord.Permissions(send_messages=False)
         guild.create_role(name="Muted",permissions=perm)
     await member.add_roles(role,reason=reason)
     await interaction.send(f'{member} was muted from text channels')
+    await bot.tree.sync()
 
-@bot.slash_command(description="unmutes a member from texting",guild_ids=guild_ids)
+@bot.hybrid_command(description="unmutes a member from texting",guild_ids=guild_ids)
 @has_permissions(mute_members=True)
-async def unmute_text(interaction:Interaction,member:nextcord.Member,*,reason=None):
-    role = nextcord.utils.get(interaction.guild.roles,name="Muted")
+async def unmute_text(interaction:commands.Context,member:discord.Member,*,reason=None):
+    role = discord.utils.get(interaction.guild.roles,name="Muted")
     await member.remove_roles(role,reason=reason)
     await interaction.send(f'{member} was unmuted from text channels')
+    await bot.tree.sync()
 
-@bot.slash_command(description="tell a joke",guild_ids=guild_ids)
-async def joke(interaction:Interaction):
+@bot.hybrid_command(description="tell a joke",guild_ids=guild_ids)
+async def joke(interaction:commands.Context):
     data = requests.get(r"https://official-joke-api.appspot.com/random_joke")
     tt = json.loads(data.text)
     await interaction.send(f"{tt['setup']}\n{tt['punchline']}")
+    await bot.tree.sync()
 
-@bot.slash_command(description="tell a chuck norris joke",guild_ids=guild_ids)
-async def chuck_norris(interaction:Interaction):
+@bot.hybrid_command(description="tell a chuck norris joke",guild_ids=guild_ids)
+async def chuck_norris(interaction:commands.Context):
     data = requests.get(r"https://api.chucknorris.io/jokes/random")
     tt = json.loads(data.text)
     await interaction.send(f"{tt['value']}")
+    await bot.tree.sync()
+
+@bot.hybrid_command(description='Create a custom embed',guild_ids=guild_ids)
+async def create_embed(interaction:commands.Context):
+    mbed = EmbedCreator(bot=bot)
+    await interaction.send(embed=mbed.get_default_embed,view=mbed)
+    await bot.tree.sync()
+
 
 bot.run("MTIyNDAwMzU2NDUzNjMzNjQ0Ng.Gek1Bp.fgRcYwYI5WPh7vPAMiDPcZKPSOgDSLVMi6R5I0")
