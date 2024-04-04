@@ -3,8 +3,12 @@ from discord.ext.commands import MissingPermissions
 import discord
 import datetime
 import json
+import discord.ext.commands
 import requests
 from dispie import EmbedCreator
+import os
+
+import discord.ext
 
 
  # Replace with your testing guild id
@@ -179,5 +183,15 @@ async def create_embed(interaction:commands.Context):
     await interaction.send(embed=mbed.get_default_embed,view=mbed)
     await bot.tree.sync()
 
+@bot.hybrid_command(description='Send a message as an Embed',guild_ids=guild_ids)
+async def quick_mbed(interaction:commands.Context,title:str,description:str,color:int=000000):
+    mbed = discord.Embed()
+    mbed.colour = color
+    mbed.title = title
+    mbed.description = description
+    mbed.set_footer(text=interaction.author)
+    mbed.timestamp = datetime.datetime.now()
+    await interaction.send(embed=mbed)
+    await bot.tree.sync()
 
-bot.run("MTIyNDAwMzU2NDUzNjMzNjQ0Ng.Gek1Bp.fgRcYwYI5WPh7vPAMiDPcZKPSOgDSLVMi6R5I0")
+bot.run("MTIyNDAwMzU2NDUzNjMzNjQ0Ng.Gp919p.8GJjtOAUKkpzsxm1c9yMlJ_ItrqmX9gboIAYU4")
