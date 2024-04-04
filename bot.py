@@ -74,28 +74,28 @@ async def unban(interaction: commands.Context,member:discord.User,*,reason = Non
     await bot.tree.sync()
 
 @bot.hybrid_command(description='mute a member from voice channels',guild_ids= guild_ids )
-@commands.has_permissions(mute_members=True)
+@commands.has_guild_permissions(mute_members=True)
 async def mute_voice(interaction: commands.Context,member:discord.Member,*,reason=None):
     await member.edit(mute=True,reason=reason)
     await interaction.send(f"{member} voice muted")
-    await bot.tree.sync()
+
 
 @bot.hybrid_command(description='unmute a member from voice channels',guild_ids= guild_ids )
-@commands.has_permissions(mute_members=True)
+@commands.has_guild_permissions(mute_members=True)
 async def unmute_voice(interaction: commands.Context,member:discord.Member,*,reason=None):
     await member.edit(mute=False,reason=reason)
     await interaction.send(f"{member} voice unmuted")
-    await bot.tree.sync()
+
 
 @bot.hybrid_command(description='deafen a member',guild_ids= guild_ids )
-@commands.has_permissions(deafen_members=True)
+@commands.has_guild_permissions(deafen_members=True)
 async def deafen(interaction: commands.Context,member:discord.Member,*,reason=None):
     await member.edit(deafen=True,reason=reason)
     await interaction.send(f"{member} deafened")
     await bot.tree.sync()
 
 @bot.hybrid_command(description='undeafen a member',guild_ids= guild_ids )
-@commands.has_permissions(deafen_members=True)
+@commands.has_guild_permissions(deafen_members=True)
 async def undeafen(interaction: commands.Context,member:discord.Member,*,reason=None):
     await member.edit(deafen=False,reason=reason)
     await interaction.send(f"{member} undeafened")
@@ -140,7 +140,7 @@ async def removetimeout(interaction: commands.Context,member:discord.Member,*,re
         await bot.tree.sync()
 
 @bot.hybrid_command(description="mutes a member from texting",guild_ids=guild_ids)
-@commands.has_permissions(mute_members=True)
+@commands.has_guild_permissions(mute_members=True)
 async def mute_text(interaction:commands.Context,member:discord.Member,*,reason=None):
     role = discord.utils.get(interaction.guild.roles,name="Muted")
     guild = interaction.guild
@@ -152,7 +152,7 @@ async def mute_text(interaction:commands.Context,member:discord.Member,*,reason=
     await bot.tree.sync()
 
 @bot.hybrid_command(description="unmutes a member from texting",guild_ids=guild_ids)
-@commands.has_permissions(mute_members=True)
+@commands.has_guild_permissions(mute_members=True)
 async def unmute_text(interaction:commands.Context,member:discord.Member,*,reason=None):
     role = discord.utils.get(interaction.guild.roles,name="Muted")
     await member.remove_roles(role,reason=reason)
