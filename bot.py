@@ -120,7 +120,7 @@ async def unban_error(interaction: commands.Context,error):
 async def timeout(interaction: commands.Context,member:discord.Member,time,*,reason=None):
     try:
         resume = datetime.timedelta(minutes=int(time))
-        await member.edit(timeout=discord.utils.utcnow() + resume,reason=reason)
+        await member.edit(timed_out_until=discord.utils.utcnow() + resume,reason=reason)
         await interaction.send(f"{member} timed out for {time} minutes")
         await bot.tree.sync()
     except discord.Forbidden:
@@ -132,7 +132,7 @@ async def timeout(interaction: commands.Context,member:discord.Member,time,*,rea
 @has_permissions(moderate_members=True)
 async def removetimeout(interaction: commands.Context,member:discord.Member,*,reason=None):
     try:
-        await member.edit(timeout=discord.utils.utcnow(),reason=reason)
+        await member.edit(timed_out_until=discord.utils.utcnow(),reason=reason)
         await interaction.send(f"removed {member} from timeout")
     except discord.Forbidden:
         await interaction.send('you dont have permission to remove timeout from members')
