@@ -7,10 +7,11 @@ import discord.ext.commands
 import requests
 from dispie import EmbedCreator
 import os
-
 import discord.ext
+from dotenv import load_dotenv
 
 
+load_dotenv()
  # Replace with your testing guild id
 
 def hex_to_rgb(value):
@@ -175,7 +176,7 @@ async def chuck_norris(interaction:commands.Context):
     data = requests.get(r"https://api.chucknorris.io/jokes/random")
     tt = json.loads(data.text)
     await interaction.send(f"{tt['value']}")
-    await bot.tree.sync()
+
 
 @bot.hybrid_command(description='Create a custom embed',guild_ids=guild_ids)
 async def create_embed(interaction:commands.Context):
@@ -194,4 +195,5 @@ async def quick_mbed(interaction:commands.Context,title:str,description:str,colo
     await interaction.send(embed=mbed)
     await bot.tree.sync()
 
-bot.run("MTIyNDAwMzU2NDUzNjMzNjQ0Ng.Gp919p.8GJjtOAUKkpzsxm1c9yMlJ_ItrqmX9gboIAYU4")
+#bot.run("MTIyNDAwMzU2NDUzNjMzNjQ0Ng.Gp919p.8GJjtOAUKkpzsxm1c9yMlJ_ItrqmX9gboIAYU4")
+bot.run(os.getenv(key="TOKEN"))
